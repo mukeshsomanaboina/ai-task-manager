@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  frontend:
+    build: ./frontend
+    container_name: ai_frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    container_name: ai_backend
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/ai_task_manager
+      - JWT_SECRET=your_secret_key
+      - GROQ_API_KEY=your_groq_api_key
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    container_name: ai_postgres
+    restart: always
+    environment:
+      POSTGRES_USER=postgres
+      POSTGRES_PASSWORD=postgres
+      POSTGRES_DB=ai_task_manager
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
